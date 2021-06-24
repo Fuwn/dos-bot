@@ -1,0 +1,6 @@
+version: "3.3"
+services:
+  dos-bot:
+    volumes:
+      - ./.dos-bot:/.dos-bot
+    image: fuwn/dos-bot
