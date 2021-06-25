@@ -26,12 +26,22 @@ pub async fn help(ctx: &Context, msg: &Message) -> CommandResult {
   commands
   ========
 
-help   - you are here
-ping   - pong!
+help
+  you are here
 
-create - create a role reaction
-remove - remove a role reaction
-count  - count the role reactions
+ping
+  pong!
+
+
+create <message_id> <role_id>
+  create a role reaction
+
+remove <message_id>
+  remove a role reaction
+
+count
+  count the role reactions
+
 
   information
   ===========
