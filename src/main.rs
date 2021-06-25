@@ -103,7 +103,7 @@ impl EventHandler for Handler {
 }
 
 #[group]
-#[commands(ping, help)]
+#[commands(ping, help, say)]
 struct General;
 
 #[tokio::main]
