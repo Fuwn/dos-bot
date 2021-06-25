@@ -27,6 +27,7 @@
 
 pub mod commands;
 pub mod config;
+pub mod database;
 
 #[macro_use]
 extern crate log;
@@ -59,16 +60,12 @@ struct Handler;
 impl EventHandler for Handler {
   async fn reaction_add(&self, ctx: Context, reaction: Reaction) {
     if let Some(guild) = reaction.guild_id {
-      if let Some(c) = config::Config::get()
-        .roles
-        .iter()
-        .find(|x| x.message == reaction.message_id.0)
-      {
+      if let Ok(role) = database::Database::new().get_reaction_role(reaction.message_id.0) {
         guild
           .member(&ctx, reaction.user_id.expect("unable to locate user id"))
           .await
           .expect("unable to locate member")
-          .add_role(&ctx, c.role)
+          .add_role(&ctx, role)
           .await
           .expect("unable to add role to member");
       }
@@ -77,16 +74,12 @@ impl EventHandler for Handler {
 
   async fn reaction_remove(&self, ctx: Context, reaction: Reaction) {
     if let Some(guild) = reaction.guild_id {
-      if let Some(c) = config::Config::get()
-        .roles
-        .iter()
-        .find(|x| x.message == reaction.message_id.0)
-      {
+      if let Ok(role) = database::Database::new().get_reaction_role(reaction.message_id.0) {
         guild
           .member(&ctx, reaction.user_id.expect("unable to locate user id"))
           .await
           .expect("unable to locate member")
-          .remove_role(&ctx, c.role)
+          .remove_role(&ctx, role)
           .await
           .expect("unable to add role to member");
       }
@@ -105,6 +98,10 @@ impl EventHandler for Handler {
 #[group]
 #[commands(ping, help, say)]
 struct General;
+
+#[group]
+#[commands(create, remove, count)]
+struct RoleReactions;
 
 #[tokio::main]
 async fn main() {
@@ -127,7 +124,8 @@ async fn main() {
 
   let framework = StandardFramework::new()
     .configure(|c| c.owners(owners).prefix(">"))
-    .group(&GENERAL_GROUP);
+    .group(&GENERAL_GROUP)
+    .group(&ROLEREACTIONS_GROUP);
 
   let mut client = Client::builder(Config::get().token.as_str())
     .framework(framework)

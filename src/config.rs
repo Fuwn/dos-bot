@@ -5,14 +5,9 @@ use config::ConfigError;
 use serde_derive::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct RolesRole {
-  pub message: u64,
-  pub role:    u64,
-}
-#[derive(Serialize, Deserialize, Debug)]
 pub struct Config {
-  pub token: String,
-  pub roles: Vec<RolesRole>,
+  pub token:       String,
+  pub admin_roles: Vec<u64>,
 }
 impl Config {
   #[allow(future_prelude_collision)]
