@@ -9,6 +9,11 @@ use serenity::{
   utils::{content_safe, ContentSafeOptions},
 };
 
+fn num_to_emoji(num: i32) -> String {
+  // Naive
+  num.to_string() + "️⃣"
+}
+
 #[command]
 pub async fn ping(ctx: &Context, msg: &Message) -> CommandResult {
   msg.channel_id.say(&ctx.http, "Pong!").await?;
@@ -181,6 +186,27 @@ pub async fn count(ctx: &Context, msg: &Message) -> CommandResult {
     .channel_id
     .say(&ctx.http, crate::database::Database::new().count())
     .await?;
+
+  Ok(())
+}
+
+#[command]
+pub async fn poll(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
+  let message = format!("__Poll created by {}__\n\n{}", msg.author.name, args.rest());
+
+  // let ops = args.rest().split(" ");
+  // let mut tick = 1;
+  // for op in ops {
+  //   message += &(num_to_emoji(tick) + " " + op + "\n");
+  //   tick += 1;
+  // }
+
+  let sent = msg.channel_id.say(&ctx.http, message).await?;
+  for i in 1..10 {
+    sent
+      .react(&ctx.http, ReactionType::Unicode(num_to_emoji(i)))
+      .await?;
+  }
 
   Ok(())
 }
